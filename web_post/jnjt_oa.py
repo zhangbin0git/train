@@ -10,8 +10,8 @@ import mechanize
 import sys
 
 # 设置编码
-reload(sys)
-sys.setdefaultencoding('utf8')
+# reload(sys)
+# sys.setdefaultencoding('utf8')
 
 class JnjtOa_post:
     """连接集团oa系统，填报表单"""
@@ -24,9 +24,24 @@ class JnjtOa_post:
         self.web_browser.open(self.http)
         # self.web_browser.set_handle_robots(False)
         # self.web_browser.set_handle_equiv(False)
-        # self.web_browser.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686;'
-        #  'en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
         # print self.web_browser.response().read()
+
+        self.web_browser.addheaders = [('User-agent',
+                          'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.11) Gecko/20100701 Firefox/3.5.11')]  ##模拟浏览器头
+        ###设置一些参数，因为是模拟客户端请求，所以要支持客户端的一些常用功能，比如gzip,referer等
+        self.web_browser.set_handle_equiv(True)
+        self.web_browser.set_handle_gzip(True)
+        self.web_browser.set_handle_redirect(True)
+        self.web_browser.set_handle_referer(True)
+        self.web_browser.set_handle_robots(False)
+
+        self.web_browser.set_handle_refresh(
+            mechanize._http.HTTPRefreshProcessor(), max_time=1)
+
+        ###这个是degbug##你可以看到他中间的执行过程，对你调试代码有帮助
+        self.web_browser.set_debug_http(True)
+        # self.web_browser.set_debug_redirects(True)
+        # self.web_browser.set_debug_responses(True)
 
     def read_form(self):
         mid = self.web_browser.forms()
@@ -36,10 +51,17 @@ class JnjtOa_post:
     def sub_form(self):
         # 填写表单
         self.web_browser.select_form(nr=0)
-        self.web_browser['userName'] = 'JNDLLIUCHENGLIANG'
+        self.web_browser['userName'] = 'sys'
         self.web_browser['password'] = '1234'
-        self.web_browser.submit()
+        # self.web_browser['org_no']= ['']
+        print self.web_browser['org_no']
+
+        # mid_pots = self.web_browser.submit()
+        # self.web_browser.open('http://10.1.3.33:7001/Liems/xslt/index.jsp')
         # print self.web_browser.response().read()
+        # for i in mid_pots:
+        #     print i
+        print self.web_browser.response().read()
 
 
     def other_mothet(self):
@@ -54,9 +76,9 @@ class JnjtOa_post:
         self.read_form()
         self.sub_form()
 
-http = "http://202.99.219.114:8888/Liems/"
+http = "http://10.1.3.33:7001/Liems/"
 oa = JnjtOa_post(http)
 oa.open_web()
 oa.read_form()
 oa.sub_form()
-oa.other_mothet()
+# oa.other_mothet()
