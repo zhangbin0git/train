@@ -44,6 +44,8 @@ class WebPost():
     def close_windows(self):
         """关闭窗口"""
         self.driver.quit()
+    def send_email(self,user_email):
+        """将上报情况以email形式发送给用户"""
 
 web_post = WebPost(path)
 web_post.operation_auth(url, username, password)
