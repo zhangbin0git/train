@@ -94,6 +94,10 @@ class WebPost():
         # 等待页面加载
         time.sleep(2)
         # 填入数据
+        # tab0_text2网内售电量
+        # tab0_text3网外售电量
+        # tab0_text4网内外售电量比
+        # tab0_text5总售电量
         self.driver.find_element_by_id("tab0_text2").send_keys(tab0_text2)
         self.driver.find_element_by_id("tab0_text3").send_keys(tab0_text3)
         self.driver.find_element_by_id("tab0_text4").send_keys(tab0_text4)
@@ -106,7 +110,6 @@ class WebPost():
         self.driver.find_element_by_id("taskDetail").click()
         # 点击"提交"按钮
         self.driver.find_element_by_class_name("wf_mouseout").click()
-        self.driver.close()
         return "200"
 
     def feedback(self):
@@ -162,7 +165,26 @@ class WebPost():
 
 
 web_post = WebPost(path)
-# web_post.operation_auth(url, username, password)
+web_post.operation_auth(url, username, password)
 # web_post.close_windows()
-response = web_post.get_data(api_url)
-print(response)
+res = web_post.get_data(api_url)
+print(res)
+# 电量需除以10，占比需要四舍五入
+# wangwai:网外售电量
+# wangwaiProp:网外电量占比
+# wangnei:网内售电量
+# wangneiProp:网内电量占比
+# total:总电量
+
+print(type(res['value']['wangnei']))
+wangnei = str(float(res['value']['wangnei']) / 10.0)
+wangwai = str(float(res['value']['wangwai']) / 10.0)
+total = str(float(res['value']['total']) / 10.0)
+prop = u'{:0.0f}:{:0.0f}'.format(float(res['value']['wangneiProp']),
+                                 float(res['value']['wangwaiProp']))
+# print(wangnei)
+# print(wangwai)
+# print(total)
+# print(prop)
+web_post.post_data(wangnei, wangwai, prop, total)
+web_post.close_windows()
