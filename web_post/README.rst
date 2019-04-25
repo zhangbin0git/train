@@ -74,15 +74,3 @@
 
 3. 将setup.py和requirements.txt提交到版本库
 
-
-
-
-    # 方法主入口
-    if __name__ == '__main__':
-        # 加启动配置
-        driver = openChrome(path)
-        operationAuth(driver, url)
-        # open_page(driver)
-
-
-
