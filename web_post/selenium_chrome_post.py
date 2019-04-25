@@ -50,22 +50,30 @@ class WebPost():
     def open_chrome(self, path):
         """前台开启浏览器模式"""
         # 返回为打开的浏览器实体，path：chrome插件地址
-        driver = webdriver.Chrome(path)
-        return driver
+        try:
+            driver = webdriver.Chrome(path)
+            return driver
+        except Exception:
+            return False
 
     def operation_auth(self, url, username, password):
         """用户授权登录"""
-        # 打开指定的网址
-        self.driver = self.open_chrome(self.path)
-        self.driver.get(url)
-        # 找到输入框
-        sys_user = self.driver.find_element_by_id("userName")
-        # 输入指定内容
-        sys_user.send_keys(username)
-        sys_pwd = self.driver.find_element_by_id("password")
-        sys_pwd.send_keys(password)
-        # 提交表单，查找提交按钮并点击
-        self.driver.find_element_by_class_name("login_btn").click()
+        ret = True
+        try:
+            # 打开指定的网址
+            self.driver = self.open_chrome(self.path)
+            self.driver.get(url)
+            # 找到输入框
+            sys_user = self.driver.find_element_by_id("userName")
+            # 输入指定内容
+            sys_user.send_keys(username)
+            sys_pwd = self.driver.find_element_by_id("password")
+            sys_pwd.send_keys(password)
+            # 提交表单，查找提交按钮并点击
+            self.driver.find_element_by_class_name("login_btn").click()
+        except Exception:
+            ret = False
+        return ret
 
     def gen_para(self, startdate, enddate,
                  clientKey="d1885d575a7211e988f500e066efe6e6",
@@ -165,6 +173,8 @@ class WebPost():
 
     def run(self):
         """整体封装运行"""
+        #
+        ret = True
         # 打开界面，登录系统
         self.operation_auth(self.url, self.username, self.password)
         # 从售电API端口提取数据
@@ -182,9 +192,9 @@ class WebPost():
             float(api_data_res['value']['wangneiProp']),
             float(api_data_res['value']['wangwaiProp']))
         # 上报数据
-        rep_data_res = self.post_data(wangnei, wangwai, prop, total)
+        ret = self.post_data(wangnei, wangwai, prop, total)
         # 效验上报情况，反馈
-        if rep_data_res == True:
+        if ret == True:
             fb = u'已正常上报晋能售电公司售电日报'
         else:
             fb = u'发生错误，请核查'
@@ -196,15 +206,8 @@ class WebPost():
         # 整体封装运行
 
 
-
-
-
-web_post = WebPost(path, api_url, url, username, password, from_addr,
-                   email_password, to_addr, smtp_server)
-# web_post.operation_auth(url, username, password)
-# web_post.close_windows()
-web_post.run()
 if __name__ == '__main__':
     web_post = WebPost(path, api_url, url, username, password, from_addr,
                        email_password, to_addr, smtp_server)
+    web_post.run()
 
