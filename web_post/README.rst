@@ -74,3 +74,8 @@
 
 3. 将setup.py和requirements.txt提交到版本库
 
+{'serviceKey': 'bloc_getElecPq', 'clientKey': 'd1885d575a7211e988f500e066efe6e6',
+'defaultConn': None, 'value': {'total': '5170.000', 'wangneiProp': '71.277',
+'wangwai': '1485.000', 'wangwaiProp': '28.723', 'wangnei': '3685.000'},
+'state': 0, 'message': None, 'exception': None}
+
