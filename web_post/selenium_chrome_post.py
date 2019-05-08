@@ -171,14 +171,12 @@ class WebPost():
             # 服务器配置
             server = smtplib.SMTP(smtp_server, 25)
             # 打印出和SMTP服务器交互的所有信息
-            server.set_debuglevel(1)
+            # server.set_debuglevel(1)
             server.login(from_addr, email_password)
             server.sendmail(from_addr, [to_addr], msg.as_string())
             server.quit()
-            print('11111111111')
             self.status['send_email'] = 1
         except:
-            print('22222222')
             self.status['send_email'] = 0
 
     def close_windows(self):
@@ -225,8 +223,7 @@ class WebPost():
                 self.close_windows()
                 print('API取数异常')
                 if self.status['get_data'] == 0:
-                    # fb = u'此条数据用于测试使用，请予以通过，发生API取数异常，请予以核实'
-                    fb = u'此条信息用于测试使用'
+                    fb = u'请予以核实API取数情况'
                 # 对上报情况通过email通知用户
                     self.send_email(self.from_addr, self.email_password,
                                     self.to_addr, self.smtp_server, fb)
@@ -235,7 +232,7 @@ class WebPost():
         else:
             print("浏览器打开异常")
             if self.status['operation_auth'] == 0:
-                fb = u'发生浏览器打开异常，请予以核实'
+                fb = u'请予以核实浏览器打开情况'
             # 对上报情况通过email通知用户
                 self.send_email(self.from_addr, self.email_password,
                                 self.to_addr, self.smtp_server, fb)
