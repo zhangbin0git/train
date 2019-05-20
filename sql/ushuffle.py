@@ -1,14 +1,27 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# @Time    : 19-5-20 下午12:38
+# @Author  : Zhangbin
+# @Site    : office
+# @File    : ushuffle.py
+# @Software: PyCharm
 
 # from distutils.log import warn as printf
 from os.path import dirname
 from random import randrange as rand
 from sqlalchemy import Column, Integer, String, create_engine, exc, orm
 from sqlalchemy.ext.declarative import declarative_base
-from ushuffle_dbU import DBNAME, NAMELEN, randName, FIELDS, tformat, cformat, setup
 
-DSNs = {
-    'mysql': 'mysql://root@localhost/%s' % DBNAME,
+# 左对齐，左侧空10个字符
+COLSIZ = 10
+DBNAME = 'mysql'
+NAMELEN = 16
+FIELDS = ('login', 'userid', 'projid')
+RDBMSs = {'s': 'sqlite', 'm': 'mysql', 'g': 'gadfly'}
+
+# 常量
+DSNS = {
+    'mysql': 'mysql://root@localhost/{}'.format(DBNAME),
     'sqlite': 'sqlite:///:memory:',
 }
 
@@ -22,7 +35,7 @@ class Users(Base):
         return ''.join(map(tformat,
             (self.login, self.userid, self.projid)))
 
-class SQLAlchemyTest(object):
+class SQLAlchemyTest():
     def __init__(self, dsn):
         try:
             eng = create_engine(dsn)
@@ -83,41 +96,25 @@ class SQLAlchemyTest(object):
     def finish(self):
         self.ses.connection().close()
 
-def main():
-    printf('*** Connect to %r database' % DBNAME)
-    db = setup()
-    if db not in DSNs:
-        printf('\nERROR: %r not supported, exit' % db)
-        return
 
-    try:
-        orm = SQLAlchemyTest(DSNs[db])
-    except RuntimeError:
-        printf('\nERROR: %r not supported, exit' % db)
-        return
 
-    printf('\n*** Create users table (drop old one if appl.)')
-    orm.drop(checkfirst=True)
-    orm.create()
 
-    printf('\n*** Insert names into table')
-    orm.insert()
-    orm.dbDump()
 
-    printf('\n*** Move users to a random group')
-    fr, to, num = orm.update()
-    printf('\t(%d users moved) from (%d) to (%d)' % (num, fr, to))
-    orm.dbDump()
+# 标题样式格式化函数，ljust左对齐
+tformat = lambda s: str(s).title().ljust(COLSIZ)
+cformat = lambda s: s.upper().ljust(COLSIZ)
 
-    printf('\n*** Randomly delete group')
-    rm, num = orm.delete()
-    printf('\t(group #%d; %d users removed)' % (rm, num))
-    orm.dbDump()
+def setup():
+    return RDBMSs[scanf('''
+Choose a database system:
 
-    printf('\n*** Drop users table')
-    orm.drop()
-    printf('\n*** Close cxns')
-    orm.finish()
+(M)ySQL
+(G)adfly
+(S)QLite
 
-if __name__ == '__main__':
-    main()
+Enter choice: ''').strip().lower()[0]]
+
+def randName():
+    pick = set(NAMES)
+    while pick:
+        yield pick.pop()
